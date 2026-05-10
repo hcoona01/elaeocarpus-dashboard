@@ -3,5 +3,7 @@
 *.log
 __pycache__/
 .vercel/
+mp4.mp4
+
 
 .vercel

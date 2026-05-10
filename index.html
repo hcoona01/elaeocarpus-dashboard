@@ -4,31 +4,62 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Elaeocarpus Blascoi Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
   <style>
     :root {
-      --bg: #f5f7f2;
-      --panel: #ffffff;
-      --ink: #1d261f;
-      --muted: #647067;
-      --line: #dbe2d6;
-      --good: #237a4b;
-      --warn: #a56a00;
-      --bad: #b83030;
-      --accent: #236b8e;
+      --bg: hsl(150, 30%, 8%);
+      --panel: rgba(0, 20, 10, 0.55);
+      --ink: #ffffff;
+      --muted: rgba(255, 255, 255, 0.6);
+      --line: rgba(255, 255, 255, 0.1);
+      --good: #4ade80;
+      --warn: #fbbf24;
+      --bad: #f87171;
+      --accent: #34d399;
+      --accent-gold: #fbbf24;
     }
 
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Montserrat', sans-serif;
       color: var(--ink);
       background: var(--bg);
+      background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.1) 0%, transparent 60%);
+    }
+
+    .video-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    /* Dark overlay on top of video for readability */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 15, 8, 0.60);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    header, main {
+      position: relative;
+      z-index: 1;
     }
 
     header {
       padding: 22px 24px 14px;
-      border-bottom: 1px solid var(--line);
-      background: var(--panel);
+      border-bottom: 1px solid rgba(52, 211, 153, 0.25);
+      background: rgba(0, 15, 8, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
     h1 {
@@ -40,7 +71,7 @@
 
     .subtitle {
       margin-top: 6px;
-      color: var(--muted);
+      color: rgba(255, 255, 255, 0.8);
       font-size: 14px;
     }
 
@@ -59,15 +90,38 @@
     }
 
     .panel {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
+      background: rgba(0, 20, 12, 0.60);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 1px rgba(52,211,153,0.08);
+      border-radius: 12px;
       padding: 16px;
+      position: relative;
+    }
+
+    .panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(160deg,
+        rgba(52,211,153,0.3) 0%,
+        rgba(255,255,255,0.04) 50%,
+        rgba(251,191,36,0.15) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
     }
 
     .metric-label {
-      color: var(--muted);
-      font-size: 13px;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       margin-bottom: 8px;
     }
 
@@ -85,12 +139,12 @@
       border-radius: 6px;
       font-weight: 700;
       font-size: 14px;
-      background: #edf4ed;
+      background: rgba(74, 222, 128, 0.15);
       color: var(--good);
     }
 
-    .status.warn { background: #fff3d8; color: var(--warn); }
-    .status.bad { background: #ffe7e7; color: var(--bad); }
+    .status.warn { background: rgba(251, 191, 36, 0.15); color: var(--warn); }
+    .status.bad { background: rgba(248, 113, 113, 0.15); color: var(--bad); }
 
     .controls {
       display: grid;
@@ -111,26 +165,62 @@
       border: 1px solid var(--line);
       border-radius: 6px;
       padding: 9px 10px;
-      background: white;
+      background: rgba(0, 0, 0, 0.2);
       color: var(--ink);
       min-width: 0;
     }
 
+
     button {
       cursor: pointer;
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-      font-weight: 700;
+      background: rgba(52, 211, 153, 0.12);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      border-radius: 8px;
+      font-weight: 600;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 2px 8px rgba(0,0,0,0.3);
+      transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease, border-color 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 60%);
+      pointer-events: none;
+    }
+
+    button:hover:not(:disabled) {
+      background: rgba(52, 211, 153, 0.22);
+      border-color: rgba(52, 211, 153, 0.7);
+      box-shadow: 0 0 18px rgba(52, 211, 153, 0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+      transform: translateY(-1px);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0px);
+      box-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
     }
 
     button.secondary {
-      background: white;
-      color: var(--accent);
+      background: rgba(255, 255, 255, 0.06);
+      color: rgba(255,255,255,0.8);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    button.secondary:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255,255,255,0.15);
     }
 
     button:disabled {
-      opacity: 0.55;
+      opacity: 0.4;
       cursor: not-allowed;
     }
 
@@ -145,7 +235,7 @@
       height: 260px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      background: white;
+      background: rgba(0, 0, 0, 0.2);
     }
 
     table {
@@ -195,7 +285,7 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 12px;
-      background: #fbfcfa;
+      background: rgba(0, 0, 0, 0.2);
     }
 
     .range-title {
@@ -217,6 +307,10 @@
   </style>
 </head>
 <body>
+  <video autoplay loop muted playsinline class="video-bg">
+    <source src="bg.webm" type="video/webm" />
+    <source src="mp4.mp4" type="video/mp4" />
+  </video>
   <header>
     <h1>Elaeocarpus Blascoi Survival Dashboard</h1>
     <div class="subtitle">DHT11 + LM393 + relay pump records, shola-habitat target mapping, local prediction, charting, CSV export, and Gemini-style tip prompt.</div>
@@ -326,7 +420,7 @@
           <input type="password" id="geminiApiKey" placeholder="Enter Gemini API Key" />
           <button id="getTipsBtn">Get Tips</button>
         </div>
-        <div id="aiTipDisplay" style="min-height: 180px; max-height: 300px; padding: 12px; border: 1px solid var(--line); border-radius: 6px; background: #fbfcfa; font-size: 14px; white-space: pre-wrap; overflow-y: auto;">Enter your API key and click "Get Tips" to generate advice based on the average of the last 20 readings.</div>
+        <div id="aiTipDisplay" style="min-height: 180px; max-height: 300px; padding: 12px; border: 1px solid var(--line); border-radius: 6px; background: rgba(0, 0, 0, 0.2); font-size: 14px; white-space: pre-wrap; overflow-y: auto;">Enter your API key and click "Get Tips" to generate advice based on the average of the last 20 readings.</div>
       </div>
     </section>
 
@@ -355,6 +449,26 @@
   </main>
 
   <script>
+    // Initialize Lenis Smooth Scroll
+    const lenis = new Lenis({
+      duration: 1.5,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: "vertical",
+      gestureOrientation: "vertical",
+      smoothWheel: true,
+      wheelMultiplier: 1.2,
+      touchMultiplier: 2,
+    });
+
+    window.lenis = lenis;
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+
     const habitatTargets = {
       idealTempMin: 19,
       idealTempMax: 23,
@@ -550,19 +664,18 @@ Keep it concise and suitable for a dashboard display.`;
       const canvas = $("chart");
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const data = records.slice(-40);
       if (data.length < 2) {
-        ctx.fillStyle = "#647067";
-        ctx.font = "18px Arial";
+        ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+        ctx.font = "18px 'Montserrat', sans-serif";
         ctx.fillText("Add records to see chart", 28, 48);
         return;
       }
 
       const pad = 42;
-      ctx.strokeStyle = "#dbe2d6";
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
       ctx.lineWidth = 1;
       for (let i = 0; i < 5; i++) {
         const y = pad + i * ((canvas.height - pad * 2) / 4);
@@ -572,23 +685,46 @@ Keep it concise and suitable for a dashboard display.`;
         ctx.stroke();
       }
 
-      drawLine(data.map(r => r.temperature_c), "#236b8e", 0, 45);
-      drawLine(data.map(r => r.humidity_percent), "#237a4b", 0, 100);
+      drawLine(data.map(r => r.temperature_c), "#38bdf8", 0, 45, "rgba(56, 189, 248, 0.4)", "rgba(56, 189, 248, 0)");
+      drawLine(data.map(r => r.humidity_percent), "#4ade80", 0, 100, "rgba(74, 222, 128, 0.4)", "rgba(74, 222, 128, 0)");
 
-      ctx.fillStyle = "#236b8e";
+      ctx.shadowBlur = 0;
+      ctx.font = "13px 'Montserrat', sans-serif";
+      ctx.fillStyle = "#38bdf8";
       ctx.fillText("Temperature", pad, 22);
-      ctx.fillStyle = "#237a4b";
+      ctx.fillStyle = "#4ade80";
       ctx.fillText("Humidity", pad + 115, 22);
     }
 
-    function drawLine(values, color, min, max) {
+    function drawLine(values, color, min, max, gradStart, gradEnd) {
       const canvas = $("chart");
       const ctx = canvas.getContext("2d");
       const pad = 42;
       const w = canvas.width - pad * 2;
       const h = canvas.height - pad * 2;
+      
+      const grad = ctx.createLinearGradient(0, pad, 0, canvas.height - pad);
+      grad.addColorStop(0, gradStart);
+      grad.addColorStop(1, gradEnd);
+      
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(pad, canvas.height - pad);
+      values.forEach((v, i) => {
+        const x = pad + (i / (values.length - 1)) * w;
+        const y = pad + (1 - ((v - min) / (max - min))) * h;
+        ctx.lineTo(x, y);
+      });
+      ctx.lineTo(pad + w, canvas.height - pad);
+      ctx.fill();
+
       ctx.strokeStyle = color;
       ctx.lineWidth = 3;
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = color;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      
       ctx.beginPath();
       values.forEach((v, i) => {
         const x = pad + (i / (values.length - 1)) * w;
