@@ -1,0 +1,5 @@
+*.pkl
+*.csv
+*.log
+__pycache__/
+.vercel/
